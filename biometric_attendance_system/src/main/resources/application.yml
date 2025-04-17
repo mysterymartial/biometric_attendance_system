@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/biometric_attendance_db
+    username: root
+    password: ENC(d5woQHsSfV04iFxB00J+9aGsUHLnFRXX) # Replace with your actual encrypted password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    open-in-view: false
+
+jasypt:
+  encryptor:
+    algorithm: PBEWithMD5AndDES
+    key-obtention-iterations: 1000
+    pool-size: 1
+    provider-name: SunJCE
+    salt-generator-classname: org.jasypt.salt.RandomSaltGenerator
+    iv-generator-classname: org.jasypt.iv.NoIvGenerator
+    string-output-type: base64
+#    spring:
+#      main:
+#        allow-circular-references: true
