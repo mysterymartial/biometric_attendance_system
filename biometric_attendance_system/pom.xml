@@ -7,6 +7,13 @@
     <groupId>africa.pk</groupId>
     <artifactId>biometric_attendance_system</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.3</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
