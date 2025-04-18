@@ -28,14 +28,14 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class AttendanceServiceImpl implements AttendanceService {
-    @Lazy
-    private AttendanceRepository attendanceRepository;
 
-    @Lazy
-    private NativeService nativeService;
+    private final AttendanceRepository attendanceRepository;
 
-    @Lazy
-    private AttendanceMessageHandler attendanceMessageHandler;
+
+    private final NativeService nativeService;
+
+
+    private final AttendanceMessageHandler attendanceMessageHandler;
 
     private final String responseTopic = "response";
 
