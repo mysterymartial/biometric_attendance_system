@@ -20,6 +20,7 @@ import africa.pk.attendance.utils.Mapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -41,6 +42,7 @@ public class AdminServiceImpl implements AdminService {
     private final NativeService nativeService;
     private final AttendanceService attendanceService;
     private final AttendanceMessageHandler attendanceMessageHandler;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     private final String responseTopic = "response";
 
@@ -53,7 +55,7 @@ public class AdminServiceImpl implements AdminService {
             admin.setUserName(registerAdminRequest.getUserName());
             admin.setFirstName(registerAdminRequest.getFirstName());
             admin.setLastName(registerAdminRequest.getLastName());
-            admin.setPassword(registerAdminRequest.getPassword());
+            admin.setPassword(passwordEncoder.encode(registerAdminRequest.getPassword()));
             admin.setIsLoggedIn(false);
             adminRepository.save(admin);
             RegisterAdminResponse response = new RegisterAdminResponse();
@@ -102,7 +104,7 @@ public class AdminServiceImpl implements AdminService {
             }
 
             Optional<Admin> admin = adminRepository.findByUserName(loginAdminRequest.getUserName());
-            if (admin.isPresent() && admin.get().getPassword().equals(loginAdminRequest.getPassword())) {
+            if (admin.isPresent() && passwordEncoder.matches(loginAdminRequest.getPassword(), admin.get().getPassword())) {
                 admin.get().setIsLoggedIn(true);
                 adminRepository.save(admin.get());
                 LoginAdminResponse response = new LoginAdminResponse();

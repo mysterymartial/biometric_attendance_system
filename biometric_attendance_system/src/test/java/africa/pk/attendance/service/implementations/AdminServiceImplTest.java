@@ -10,6 +10,7 @@ import africa.pk.attendance.data.repositories.DailyAttendanceStatusRepository;
 import africa.pk.attendance.data.repositories.NativeRepository;
 import africa.pk.attendance.dtos.request.*;
 import africa.pk.attendance.dtos.response.*;
+
 import africa.pk.attendance.expections.AdminExpection;
 import africa.pk.attendance.expections.AttendanceExpection;
 import africa.pk.attendance.service.interfaces.AttendanceMessageHandler;
@@ -23,6 +24,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; // Added for password hashing
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -58,6 +60,9 @@ public class AdminServiceImplTest {
 
     @Mock
     private AttendanceMessageHandler attendanceMessageHandler;
+
+    @Mock
+    private BCryptPasswordEncoder passwordEncoder; // Added to fix NullPointerException
 
     @InjectMocks
     private AdminServiceImpl adminService;
@@ -129,6 +134,8 @@ public class AdminServiceImplTest {
 
     @Test
     void testRegisterAdmin_Success() {
+        // Mock passwordEncoder to return a hashed password
+        when(passwordEncoder.encode("password123")).thenReturn("$2a$10$mockedHashedPassword");
         when(adminRepository.findByUserName("admin1")).thenReturn(Optional.empty());
         when(adminRepository.save(any(Admin.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -140,6 +147,7 @@ public class AdminServiceImplTest {
         assertEquals("John", response.getFirstName());
         assertEquals("Doe", response.getLastName());
         verify(adminRepository, times(1)).save(any(Admin.class));
+        verify(passwordEncoder, times(1)).encode("password123"); // Verify encoder was called
     }
 
     @Test
@@ -221,11 +229,12 @@ public class AdminServiceImplTest {
     void testLoginAdmin_Success() {
         Admin admin = new Admin();
         admin.setUserName("admin1");
-        admin.setPassword("password123");
+        admin.setPassword("$2a$10$mockedHashedPassword"); // Use hashed password
         admin.setFirstName("John");
         admin.setLastName("Doe");
         admin.setIsLoggedIn(false);
         when(adminRepository.findByUserName("admin1")).thenReturn(Optional.of(admin));
+        when(passwordEncoder.matches("password123", "$2a$10$mockedHashedPassword")).thenReturn(true); // Mock password match
         when(adminRepository.save(any(Admin.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         LoginAdminResponse response = adminService.loginAdmin(loginAdminRequest);
@@ -237,6 +246,7 @@ public class AdminServiceImplTest {
         assertEquals("Doe", response.getLastName());
         assertTrue(admin.getIsLoggedIn());
         verify(adminRepository, times(1)).save(any(Admin.class));
+        verify(passwordEncoder, times(1)).matches("password123", "$2a$10$mockedHashedPassword"); // Verify matches was called
     }
 
     @Test
@@ -251,12 +261,14 @@ public class AdminServiceImplTest {
     void testLoginAdmin_WrongPassword() {
         Admin admin = new Admin();
         admin.setUserName("admin1");
-        admin.setPassword("wrong");
+        admin.setPassword("$2a$10$mockedHashedPassword"); // Use hashed password
         when(adminRepository.findByUserName("admin1")).thenReturn(Optional.of(admin));
+        when(passwordEncoder.matches("password123", "$2a$10$mockedHashedPassword")).thenReturn(false); // Mock failed password match
 
         assertThrows(AdminExpection.class, () -> adminService.loginAdmin(loginAdminRequest));
 
         verify(adminRepository, never()).save(any(Admin.class));
+        verify(passwordEncoder, times(1)).matches("password123", "$2a$10$mockedHashedPassword");
     }
 
     @Test

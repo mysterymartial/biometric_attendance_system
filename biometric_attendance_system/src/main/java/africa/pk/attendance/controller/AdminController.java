@@ -1,6 +1,5 @@
 package africa.pk.attendance.controller;
 
-
 import africa.pk.attendance.dtos.request.*;
 import africa.pk.attendance.dtos.response.*;
 import africa.pk.attendance.service.interfaces.AdminService;
@@ -16,7 +15,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/admin")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class AdminController {
 
     private final AdminService adminService;
@@ -93,6 +91,51 @@ public class AdminController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
         headers.setContentDispositionFormData("attachment", "all_attendance.xlsx");
+        return new ResponseEntity<>(excelData, headers, 200);
+    }
+
+    @PostMapping("/attendance/time-based/excel")
+    public ResponseEntity<byte[]> viewAllAttendanceByTimeAsExcel(@Valid @RequestBody AllTimeBasedAttendanceRequest request) {
+        byte[] excelData = adminService.viewAllAttendanceByTimeAsExcel(request);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+        headers.setContentDispositionFormData("attachment", "time_based_attendance.xlsx");
+        return new ResponseEntity<>(excelData, headers, 200);
+    }
+
+    @PostMapping("/attendance/cohort/excel")
+    public ResponseEntity<byte[]> viewCohortAttendanceAsExcel(@Valid @RequestBody CohortAttendanceRequest request) {
+        byte[] excelData = adminService.viewCohortAttendanceAsExcel(request);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+        headers.setContentDispositionFormData("attachment", "cohort_attendance.xlsx");
+        return new ResponseEntity<>(excelData, headers, 200);
+    }
+
+    @PostMapping("/attendance/cohort/time-based/excel")
+    public ResponseEntity<byte[]> viewCohortAttendanceByTimeAsExcel(@Valid @RequestBody CohortTimeBasedAttendanceRequest request) {
+        byte[] excelData = adminService.viewCohortAttendanceByTimeAsExcel(request);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+        headers.setContentDispositionFormData("attachment", "cohort_time_based_attendance.xlsx");
+        return new ResponseEntity<>(excelData, headers, 200);
+    }
+
+    @PostMapping("/attendance/native/excel")
+    public ResponseEntity<byte[]> viewNativeAttendanceAsExcel(@Valid @RequestBody NativeAttendanceRequest request) {
+        byte[] excelData = adminService.viewNativeAttendanceAsExcel(request);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+        headers.setContentDispositionFormData("attachment", "native_attendance.xlsx");
+        return new ResponseEntity<>(excelData, headers, 200);
+    }
+
+    @PostMapping("/attendance/native/time-based/excel")
+    public ResponseEntity<byte[]> viewNativeAttendanceByTimeAsExcel(@Valid @RequestBody NativeTimeBasedAttendanceRequest request) {
+        byte[] excelData = adminService.viewNativeAttendanceByTimeAsExcel(request);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+        headers.setContentDispositionFormData("attachment", "native_time_based_attendance.xlsx");
         return new ResponseEntity<>(excelData, headers, 200);
     }
 
