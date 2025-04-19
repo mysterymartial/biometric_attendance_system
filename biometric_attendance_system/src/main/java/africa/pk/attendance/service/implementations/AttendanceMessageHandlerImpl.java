@@ -55,7 +55,7 @@ public class AttendanceMessageHandlerImpl implements AttendanceMessageHandler {
             options.setUserName(username);
             options.setPassword(password.toCharArray());
             options.setCleanSession(true);
-            options.setConnectionTimeout(60);
+            options.setConnectionTimeout(30);
             options.setKeepAliveInterval(60);
             options.setAutomaticReconnect(true);
             options.setHttpsHostnameVerificationEnabled(false);
