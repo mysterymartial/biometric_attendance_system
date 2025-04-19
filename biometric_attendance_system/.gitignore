@@ -32,7 +32,7 @@ build/
 !**/src/test/**/build/
 .env
 biometric_attendance_system/src/main/java/africa/pk/attendance/utils/DbEncryption.java
-
+biometric_attendance_system/src/main/resources/application.properties
 
 ### VS Code ###
 .vscode/
