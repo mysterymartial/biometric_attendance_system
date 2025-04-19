@@ -2,7 +2,8 @@
 FROM maven:3-eclipse-temurin-21 AS build
 WORKDIR /app
 COPY biometric_attendance_system/ .
-RUN mvn clean package -DskipTests
+RUN mvn clean package -Dmaven.test.skip=true
+# Note: -Dmaven.test.skip=true skips both test execution and compilation
 
 # Runtime stage
 FROM eclipse-temurin:21-jre

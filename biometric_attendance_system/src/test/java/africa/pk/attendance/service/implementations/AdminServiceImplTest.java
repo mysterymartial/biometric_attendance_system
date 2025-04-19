@@ -45,8 +45,6 @@ public class AdminServiceImplTest {
     @Mock
     private AttendanceRepository attendanceRepository;
 
-    @Mock
-    private DailyAttendanceStatusRepository dailyAttendanceStatusRepository;
 
     @Mock
     private NativeService nativeService;
