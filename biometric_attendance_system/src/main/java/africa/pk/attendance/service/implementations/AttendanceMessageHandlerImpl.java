@@ -12,7 +12,6 @@ import org.eclipse.paho.client.mqttv3.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +27,6 @@ public class AttendanceMessageHandlerImpl implements AttendanceMessageHandler {
     private String password;
     private String topic;
     private int subQos = 1;
-
     private final List<africa.pk.attendance.dtos.response.MessageToBeReturned> messageToBeReturned = new ArrayList<>();
     private MqttClient client;
 
@@ -37,34 +35,27 @@ public class AttendanceMessageHandlerImpl implements AttendanceMessageHandler {
 
     @PostConstruct
     public void initializeTheClient() {
+        // Try to load from .env file first, then fall back to environment variables
         Properties envProps = new Properties();
+        boolean loadedFromEnvFile = false;
+
         try (FileInputStream fis = new FileInputStream(".env")) {
             envProps.load(fis);
+            loadedFromEnvFile = true;
+            System.out.println("Loaded configuration from .env file");
         } catch (Exception e) {
-            throw new IllegalStateException("Failed to load .env file: " + e.getMessage());
+            System.out.println("Could not load .env file, will try environment variables: " + e.getMessage());
         }
 
-        this.broker = envProps.getProperty("MQTT_BROKER_URL");
-        this.clientId = envProps.getProperty("MQTT_CLIENT_ID");
-        this.username = envProps.getProperty("MQTT_USERNAME");
-        this.password = envProps.getProperty("MQTT_PASSWORD");
-        this.topic = envProps.getProperty("MQTT_TOPIC");
+        // Get values from .env file or environment variables
+        this.broker = getConfigValue(envProps, "MQTT_BROKER_URL", loadedFromEnvFile);
+        this.clientId = getConfigValue(envProps, "MQTT_CLIENT_ID", loadedFromEnvFile);
+        this.username = getConfigValue(envProps, "MQTT_USERNAME", loadedFromEnvFile);
+        this.password = getConfigValue(envProps, "MQTT_PASSWORD", loadedFromEnvFile);
+        this.topic = getConfigValue(envProps, "MQTT_TOPIC", loadedFromEnvFile);
 
-        if (broker == null || broker.isEmpty()) {
-            throw new IllegalStateException("MQTT_BROKER_URL not found in .env file.");
-        }
-        if (clientId == null || clientId.isEmpty()) {
-            throw new IllegalStateException("MQTT_CLIENT_ID not found in .env file.");
-        }
-        if (username == null || username.isEmpty()) {
-            throw new IllegalStateException("MQTT_USERNAME not found in .env file.");
-        }
-        if (password == null || password.isEmpty()) {
-            throw new IllegalStateException("MQTT_PASSWORD not found in .env file.");
-        }
-        if (topic == null || topic.isEmpty()) {
-            throw new IllegalStateException("MQTT_TOPIC not found in .env file.");
-        }
+        // Validate configuration
+        validateConfig();
 
         try {
             client = new MqttClient(broker, clientId);
@@ -120,11 +111,44 @@ public class AttendanceMessageHandlerImpl implements AttendanceMessageHandler {
         }
     }
 
+    // Helper method to get configuration values from either .env file or environment variables
+    private String getConfigValue(Properties props, String key, boolean loadedFromEnvFile) {
+        if (loadedFromEnvFile && props.getProperty(key) != null) {
+            return props.getProperty(key);
+        }
+
+        // Fall back to system environment variables
+        String envValue = System.getenv(key);
+        if (envValue != null && !envValue.isEmpty()) {
+            return envValue;
+        }
+
+        return null;
+    }
+
+    // Validate that all required configuration values are present
+    private void validateConfig() {
+        if (broker == null || broker.isEmpty()) {
+            throw new IllegalStateException("MQTT_BROKER_URL not found in configuration.");
+        }
+        if (clientId == null || clientId.isEmpty()) {
+            throw new IllegalStateException("MQTT_CLIENT_ID not found in configuration.");
+        }
+        if (username == null || username.isEmpty()) {
+            throw new IllegalStateException("MQTT_USERNAME not found in configuration.");
+        }
+        if (password == null || password.isEmpty()) {
+            throw new IllegalStateException("MQTT_PASSWORD not found in configuration.");
+        }
+        if (topic == null || topic.isEmpty()) {
+            throw new IllegalStateException("MQTT_TOPIC not found in configuration.");
+        }
+    }
+
     private void reconnect() {
         int retryInterval = 5000;
         int maxRetries = 5;
         int retryCount = 0;
-
         while (!client.isConnected() && retryCount < maxRetries) {
             try {
                 System.out.println("Attempting to reconnect to MQTT broker... (Attempt " + (retryCount + 1) + " of " + maxRetries + ")");
@@ -136,7 +160,6 @@ public class AttendanceMessageHandlerImpl implements AttendanceMessageHandler {
                 options.setKeepAliveInterval(60);
                 options.setAutomaticReconnect(true);
                 options.setHttpsHostnameVerificationEnabled(false);
-
                 client.connect(options);
                 client.subscribe(topic, subQos);
                 System.out.println("Reconnected to MQTT broker and resubscribed to topic: " + topic);
@@ -158,13 +181,11 @@ public class AttendanceMessageHandlerImpl implements AttendanceMessageHandler {
 
     private void publishMessageToAttendanceSystem(String subTopic, MqttClient client) throws MqttException {
         AtomicReference<String> message = new AtomicReference<>();
-
         messageToBeReturned.forEach((attendanceReturnMessages) -> {
             if (attendanceReturnMessages.getTopicToPublishTo().equals(subTopic)) {
                 message.set(attendanceReturnMessages.getMessage());
             }
         });
-
         if (message.get() != null && client.isConnected()) {
             MqttMessage newMessage = new MqttMessage(message.get().getBytes());
             newMessage.setQos(1);
