@@ -20,6 +20,12 @@ jasypt:
     salt-generator-classname: org.jasypt.salt.RandomSaltGenerator
     iv-generator-classname: org.jasypt.iv.NoIvGenerator
     string-output-type: base64
+mqtt:
+  broker: tcp://localhost:1883  # Replace with your dev MQTT broker URL
+  client-id: dev-client-id      # Replace with your dev client ID
+  username: dev-username        # Replace with your dev MQTT username
+  password: dev-password        # Replace with your dev MQTT password
+  topic: dev/topic              # Replace with your dev MQTT topic
 
 ---
 spring:
@@ -36,7 +42,7 @@ spring:
       ddl-auto: update
     show-sql: false
     open-in-view: false
-    database-platform: org.hibernate.dialect.MySQL8Dialect  # Explicitly set the dialect
+    database-platform: org.hibernate.dialect.MySQL8Dialect
 jasypt:
   encryptor:
     algorithm: PBEWithMD5AndDES
@@ -46,3 +52,9 @@ jasypt:
     salt-generator-classname: org.jasypt.salt.RandomSaltGenerator
     iv-generator-classname: org.jasypt.iv.NoIvGenerator
     string-output-type: base64
+mqtt:
+  broker: ENC(your_encrypted_broker_url)
+  client-id: ENC(your_encrypted_client_id)
+  username: ENC(your_encrypted_username)
+  password: ENC(your_encrypted_password)
+  topic: ENC(your_encrypted_topic)          
