@@ -27,7 +27,7 @@ spring:
     activate:
       on-profile: prod
   datasource:
-    url: jdbc:mysql://mysql-1e6d381b-bolasax16-f968.aivencloud.com:3306/biometric_attendance_db?useSSL=true
+    url: jdbc:mysql://mysql-1e6d381b-bolasax16-f968.j.aivencloud.com:12065/biometric_attendance_db?sslMode=REQUIRED
     username: avnadmin
     password: ENC(8PXpXG/HqoR+JCS9ROxINfhi5Ujg4ykx1cC5+IRYKbTR6yHYZnhkHw==)
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -36,6 +36,7 @@ spring:
       ddl-auto: update
     show-sql: false
     open-in-view: false
+    database-platform: org.hibernate.dialect.MySQL8Dialect  # Explicitly set the dialect
 jasypt:
   encryptor:
     algorithm: PBEWithMD5AndDES
