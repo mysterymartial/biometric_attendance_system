@@ -9,57 +9,61 @@ import com.google.gson.Gson;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.paho.client.mqttv3.*;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @RequiredArgsConstructor
 public class AttendanceMessageHandlerImpl implements AttendanceMessageHandler {
-    @Value("${mqtt.broker}")
     private String broker;
-
-    @Value("${mqtt.client-id}")
     private String clientId;
-
-    @Value("${mqtt.username}")
     private String username;
-
-    @Value("${mqtt.password}")
     private String password;
-
-    @Value("${mqtt.topic}")
     private String topic;
-
     private int subQos = 1;
 
-    private final List<MessageToBeReturned> messageToBeReturned = new ArrayList<>();
+    private final List<africa.pk.attendance.dtos.response.MessageToBeReturned> messageToBeReturned = new ArrayList<>();
     private MqttClient client;
 
     @Lazy
-    private final AttendanceMessageService attendanceMessageService;
+    private AttendanceMessageService attendanceMessageService;
 
     @PostConstruct
     public void initializeTheClient() {
-        // Validate configuration properties
+        Properties envProps = new Properties();
+        try (FileInputStream fis = new FileInputStream(".env")) {
+            envProps.load(fis);
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to load .env file: " + e.getMessage());
+        }
+
+        this.broker = envProps.getProperty("MQTT_BROKER_URL");
+        this.clientId = envProps.getProperty("MQTT_CLIENT_ID");
+        this.username = envProps.getProperty("MQTT_USERNAME");
+        this.password = envProps.getProperty("MQTT_PASSWORD");
+        this.topic = envProps.getProperty("MQTT_TOPIC");
+
         if (broker == null || broker.isEmpty()) {
-            throw new IllegalStateException("MQTT_BROKER_URL is not configured.");
+            throw new IllegalStateException("MQTT_BROKER_URL not found in .env file.");
         }
         if (clientId == null || clientId.isEmpty()) {
-            throw new IllegalStateException("MQTT_CLIENT_ID is not configured.");
+            throw new IllegalStateException("MQTT_CLIENT_ID not found in .env file.");
         }
         if (username == null || username.isEmpty()) {
-            throw new IllegalStateException("MQTT_USERNAME is not configured.");
+            throw new IllegalStateException("MQTT_USERNAME not found in .env file.");
         }
         if (password == null || password.isEmpty()) {
-            throw new IllegalStateException("MQTT_PASSWORD is not configured.");
+            throw new IllegalStateException("MQTT_PASSWORD not found in .env file.");
         }
         if (topic == null || topic.isEmpty()) {
-            throw new IllegalStateException("MQTT_TOPIC is not configured.");
+            throw new IllegalStateException("MQTT_TOPIC not found in .env file.");
         }
 
         try {
@@ -84,9 +88,9 @@ public class AttendanceMessageHandlerImpl implements AttendanceMessageHandler {
                 @Override
                 public void messageArrived(String topic, MqttMessage message) throws Exception {
                     Gson gson = new Gson();
-                    AttendanceMessage incomingMessage = gson.fromJson(new String(message.getPayload()), AttendanceMessage.class);
+                    africa.pk.attendance.dtos.request.AttendanceMessage incomingMessage = gson.fromJson(new String(message.getPayload()), africa.pk.attendance.dtos.request.AttendanceMessage.class);
                     if (incomingMessage.getTime() != null && incomingMessage.getDate() != null && incomingMessage.getFingerprintId() != null) {
-                        AttendanceProcessingResult result = attendanceMessageService.addMessage(incomingMessage);
+                        africa.pk.attendance.dtos.response.AttendanceProcessingResult result = attendanceMessageService.addMessage(incomingMessage);
                         System.out.println("Received and processed message: " + incomingMessage);
                         // Only send error messages to MQTT
                         if (!result.isSuccess()) {
@@ -172,7 +176,7 @@ public class AttendanceMessageHandlerImpl implements AttendanceMessageHandler {
 
     @Override
     public void getMessageFromAttendanceHandler(String message, String topicToSendMessageTo) {
-        MessageToBeReturned messageToBeReturned = new MessageToBeReturned();
+        africa.pk.attendance.dtos.response.MessageToBeReturned messageToBeReturned = new africa.pk.attendance.dtos.response.MessageToBeReturned();
         messageToBeReturned.setMessage(message);
         messageToBeReturned.setTopicToPublishTo(topicToSendMessageTo);
         this.messageToBeReturned.add(messageToBeReturned);
