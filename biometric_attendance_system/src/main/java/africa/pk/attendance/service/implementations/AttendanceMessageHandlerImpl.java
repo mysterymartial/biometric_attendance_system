@@ -1,15 +1,10 @@
 package africa.pk.attendance.service.implementations;
-
-import africa.pk.attendance.dtos.request.AttendanceMessage;
-import africa.pk.attendance.dtos.response.AttendanceProcessingResult;
-import africa.pk.attendance.dtos.response.MessageToBeReturned;
 import africa.pk.attendance.service.interfaces.AttendanceMessageHandler;
 import africa.pk.attendance.service.interfaces.AttendanceMessageService;
 import com.google.gson.Gson;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.paho.client.mqttv3.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import java.io.FileInputStream;
@@ -35,7 +30,6 @@ public class AttendanceMessageHandlerImpl implements AttendanceMessageHandler {
 
     @PostConstruct
     public void initializeTheClient() {
-        // Try to load from .env file first, then fall back to environment variables
         Properties envProps = new Properties();
         boolean loadedFromEnvFile = false;
 
@@ -47,14 +41,12 @@ public class AttendanceMessageHandlerImpl implements AttendanceMessageHandler {
             System.out.println("Could not load .env file, will try environment variables: " + e.getMessage());
         }
 
-        // Get values from .env file or environment variables
         this.broker = getConfigValue(envProps, "MQTT_BROKER_URL", loadedFromEnvFile);
         this.clientId = getConfigValue(envProps, "MQTT_CLIENT_ID", loadedFromEnvFile);
         this.username = getConfigValue(envProps, "MQTT_USERNAME", loadedFromEnvFile);
         this.password = getConfigValue(envProps, "MQTT_PASSWORD", loadedFromEnvFile);
         this.topic = getConfigValue(envProps, "MQTT_TOPIC", loadedFromEnvFile);
 
-        // Validate configuration
         validateConfig();
 
         try {
@@ -83,7 +75,6 @@ public class AttendanceMessageHandlerImpl implements AttendanceMessageHandler {
                     if (incomingMessage.getTime() != null && incomingMessage.getDate() != null && incomingMessage.getFingerprintId() != null) {
                         africa.pk.attendance.dtos.response.AttendanceProcessingResult result = attendanceMessageService.addMessage(incomingMessage);
                         System.out.println("Received and processed message: " + incomingMessage);
-                        // Only send error messages to MQTT
                         if (!result.isSuccess()) {
                             getMessageFromAttendanceHandler(result.getMessage(), result.getTopic());
                         }
@@ -111,13 +102,12 @@ public class AttendanceMessageHandlerImpl implements AttendanceMessageHandler {
         }
     }
 
-    // Helper method to get configuration values from either .env file or environment variables
     private String getConfigValue(Properties props, String key, boolean loadedFromEnvFile) {
         if (loadedFromEnvFile && props.getProperty(key) != null) {
             return props.getProperty(key);
         }
 
-        // Fall back to system environment variables
+
         String envValue = System.getenv(key);
         if (envValue != null && !envValue.isEmpty()) {
             return envValue;
@@ -126,7 +116,6 @@ public class AttendanceMessageHandlerImpl implements AttendanceMessageHandler {
         return null;
     }
 
-    // Validate that all required configuration values are present
     private void validateConfig() {
         if (broker == null || broker.isEmpty()) {
             throw new IllegalStateException("MQTT_BROKER_URL not found in configuration.");
