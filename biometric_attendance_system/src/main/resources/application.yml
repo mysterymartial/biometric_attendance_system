@@ -27,9 +27,9 @@ spring:
     activate:
       on-profile: prod
   datasource:
-    url: jdbc:mysql://placeholder:3306/biometric_attendance_db?useSSL=true
-    username: root
-    password: ENC(d5woQHsSfV04iFxB00J+9aGsUHLnFRXX)
+    url: jdbc:mysql://mysql-1e6d381b-bolasax16-f968.aivencloud.com:3306/biometric_attendance_db?useSSL=true
+    username: avnadmin
+    password: ENC(8PXpXG/HqoR+JCS9ROxINfhi5Ujg4ykx1cC5+IRYKbTR6yHYZnhkHw==)
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:

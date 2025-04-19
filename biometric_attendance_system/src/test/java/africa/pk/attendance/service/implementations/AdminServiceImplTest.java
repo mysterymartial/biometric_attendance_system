@@ -2,11 +2,9 @@ package africa.pk.attendance.service.implementations;
 
 import africa.pk.attendance.data.models.Admin;
 import africa.pk.attendance.data.models.Attendance;
-import africa.pk.attendance.data.models.DaliyAttendanceStatus;
 import africa.pk.attendance.data.models.Native;
 import africa.pk.attendance.data.repositories.AdminRepository;
 import africa.pk.attendance.data.repositories.AttendanceRepository;
-import africa.pk.attendance.data.repositories.DailyAttendanceStatusRepository;
 import africa.pk.attendance.data.repositories.NativeRepository;
 import africa.pk.attendance.dtos.request.*;
 import africa.pk.attendance.dtos.response.*;
@@ -26,9 +24,7 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; // Added for password hashing
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;

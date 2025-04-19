@@ -1,12 +1,9 @@
 package africa.pk.attendance.service.implementations;
 
 import africa.pk.attendance.data.models.Admin;
-import africa.pk.attendance.data.models.Attendance;
-import africa.pk.attendance.data.models.DaliyAttendanceStatus;
 import africa.pk.attendance.data.models.Native;
 import africa.pk.attendance.data.repositories.AdminRepository;
 import africa.pk.attendance.data.repositories.AttendanceRepository;
-import africa.pk.attendance.data.repositories.DailyAttendanceStatusRepository;
 import africa.pk.attendance.data.repositories.NativeRepository;
 import africa.pk.attendance.dtos.request.*;
 import africa.pk.attendance.dtos.response.*;
@@ -38,7 +35,6 @@ public class AdminServiceImpl implements AdminService {
     private final AdminRepository adminRepository;
     private final NativeRepository nativeRepository;
     private final AttendanceRepository attendanceRepository;
-    private final DailyAttendanceStatusRepository dailyAttendanceStatusRepository;
     private final NativeService nativeService;
     private final AttendanceService attendanceService;
     private final AttendanceMessageHandler attendanceMessageHandler;
