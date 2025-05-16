@@ -320,9 +320,9 @@ public class AdminServiceImpl implements AdminService {
 
         Row headerRow = sheet.createRow(0);
         String[] columns = {"Native Name", "Date", "Time", "Cohort"};
-        for (int i = 0; i < columns.length; i++) {
-            Cell cell = headerRow.createCell(i);
-            cell.setCellValue(columns[i]);
+        for (int count = 0; count < columns.length; count++) {
+            Cell cell = headerRow.createCell(count);
+            cell.setCellValue(columns[count]);
             CellStyle headerStyle = workbook.createCellStyle();
             headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
             headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
@@ -340,8 +340,8 @@ public class AdminServiceImpl implements AdminService {
             row.createCell(3).setCellValue(nativePerson.getCohort());
         }
 
-        for (int i = 0; i < columns.length; i++) {
-            sheet.autoSizeColumn(i);
+        for (int count = 0; count < columns.length; count++) {
+            sheet.autoSizeColumn(count);
         }
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

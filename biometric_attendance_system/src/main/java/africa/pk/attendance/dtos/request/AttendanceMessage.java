@@ -8,6 +8,8 @@ public class AttendanceMessage {
     private String time;
     private String date;
     private String topic;
+    private  String status;
+
 
     @Override
     public String toString() {
@@ -16,6 +18,7 @@ public class AttendanceMessage {
                 ", time='" + time + '\'' +
                 ", date='" + date + '\'' +
                 ", topic='" + topic + '\'' +
+                ", status='" + status + '\'' +
                 '}';
     }
 }

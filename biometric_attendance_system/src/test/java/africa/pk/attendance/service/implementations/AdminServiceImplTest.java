@@ -876,7 +876,7 @@ public class AdminServiceImplTest {
     }
 
     @Test
-    void testViewAllAttendanceAsExcel_Success() throws Exception {
+    void testViewAllAttendanceAsExcel_Success() {
         AttendanceHistoryResponse response = new AttendanceHistoryResponse();
         response.setFingerprintId("FP1");
         response.setNativeName("John Doe");

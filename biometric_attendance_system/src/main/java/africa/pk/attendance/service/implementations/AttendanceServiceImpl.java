@@ -14,8 +14,6 @@ import africa.pk.attendance.service.interfaces.AttendanceService;
 import africa.pk.attendance.service.interfaces.NativeService;
 import africa.pk.attendance.utils.Mapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -30,13 +28,8 @@ import java.util.stream.Collectors;
 public class AttendanceServiceImpl implements AttendanceService {
 
     private final AttendanceRepository attendanceRepository;
-
-
     private final NativeService nativeService;
-
-
     private final AttendanceMessageHandler attendanceMessageHandler;
-
     private final String responseTopic = "response";
 
     @Override
@@ -69,7 +62,7 @@ public class AttendanceServiceImpl implements AttendanceService {
             }
 
             Attendance attendance = Mapper.map(addAttendanceRequest);
-            attendance.setStatus("Present"); // Adding status field
+            attendance.setStatus(addAttendanceRequest.getStatus() != null ? addAttendanceRequest.getStatus() : "Present"); // Use hardware status or default to "Present"
             attendanceRepository.save(attendance);
 
             AddAttendanceResponse response = new AddAttendanceResponse();

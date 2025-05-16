@@ -6,7 +6,7 @@ import lombok.Data;
 public class AddAttendanceRequest {
     private String fingerprintId;
     private String nativeName;
-    //private String status;
     private String attendanceDate;
     private String attendanceTime;
+    private String status;
 }

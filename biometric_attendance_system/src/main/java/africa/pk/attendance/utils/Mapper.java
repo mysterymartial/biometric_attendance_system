@@ -48,11 +48,11 @@ public class Mapper {
 
     public static Attendance map(AddAttendanceRequest addAttendanceRequest) {
         Attendance attendance = new Attendance();
-        attendance.setNativeId(addAttendanceRequest.getFingerprintId()); // Fixed: Use setNativeId instead of setFingerprintId
+        attendance.setNativeId(addAttendanceRequest.getFingerprintId());
         attendance.setNativeName(addAttendanceRequest.getNativeName());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         LocalDateTime attendanceDateTime = LocalDateTime.parse(addAttendanceRequest.getAttendanceDate(), formatter);
-        attendance.setAttendanceDate(attendanceDateTime); // Correct: setAttendanceDate accepts LocalDateTime
+        attendance.setAttendanceDate(attendanceDateTime);
         attendance.setAttendanceTime(addAttendanceRequest.getAttendanceTime());
         return attendance;
     }

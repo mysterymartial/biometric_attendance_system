@@ -11,8 +11,6 @@ import africa.pk.attendance.service.interfaces.AttendanceMessageHandler;
 import africa.pk.attendance.service.interfaces.NativeService;
 import africa.pk.attendance.utils.Mapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -62,9 +60,6 @@ public class NativeServiceImpl implements NativeService {
 
             Native nativePerson = Mapper.map(registerNativeRequest);
             Native savedNative = nativeRepository.save(nativePerson);
-            if (savedNative == null) {
-                throw new NativeExpection("Failed to save Native to the repository");
-            }
             return Mapper.map(savedNative);
         } catch (NativeExpection e) {
             attendanceMessageHandler.publishMessage("Error: " + e.getMessage(), responseTopic);

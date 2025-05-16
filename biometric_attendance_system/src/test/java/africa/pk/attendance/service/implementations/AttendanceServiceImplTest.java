@@ -21,14 +21,12 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -286,9 +284,6 @@ public class AttendanceServiceImplTest {
     @Test
     public void testGetNativeAttendanceHistory_NullFingerprintId() {
         attendanceHistoryRequest.setFingerprintId(null);
-
-        LocalDateTime startDate = LocalDateTime.of(2025, 4, 1, 0, 0, 0);
-        LocalDateTime endDate = LocalDateTime.of(2025, 4, 30, 23, 59, 59);
 
         assertThrows(AttendanceExpection.class, () -> attendanceService.getNativeAttendanceHistory(attendanceHistoryRequest));
 

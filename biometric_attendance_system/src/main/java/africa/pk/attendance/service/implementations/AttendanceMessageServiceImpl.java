@@ -43,6 +43,7 @@ public class AttendanceMessageServiceImpl implements AttendanceMessageService {
             addAttendanceRequest.setNativeName(findNativeResponse.getFirstName() + " " + findNativeResponse.getLastName());
             addAttendanceRequest.setAttendanceDate(attendanceMessage.getDate() + "T" + attendanceMessage.getTime());
             addAttendanceRequest.setAttendanceTime(attendanceMessage.getTime());
+            addAttendanceRequest.setStatus(attendanceMessage.getStatus());
 
             AddAttendanceResponse addAttendanceResponse = attendanceService.addAttendance(addAttendanceRequest);
 
